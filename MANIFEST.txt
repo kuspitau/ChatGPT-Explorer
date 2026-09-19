@@ -1,0 +1,16 @@
+ChatGPT Explorer baseline V0.2.2
+
+Key change from V0.2.0:
+- reliable pointer-based drag & drop
+- drag starts from the whole row/label area
+- multi-selection drag preserved
+- storage schema remains version 1
+
+Validation performed before packaging:
+- manifest.json JSON parse: PASS
+- JavaScript syntax checks: PASS
+- core selection/tree/drag-threshold smoke tests: PASS
+- manifest/HTML local file references: PASS
+- ZIP integrity test: PASS
+
+Manual Edge side-panel smoke test still required.

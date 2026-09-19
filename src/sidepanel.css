@@ -1,0 +1,226 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg: Canvas;
+  --fg: CanvasText;
+  --muted: color-mix(in srgb, CanvasText 55%, transparent);
+  --border: color-mix(in srgb, CanvasText 18%, transparent);
+  --hover: color-mix(in srgb, CanvasText 8%, transparent);
+  --selected: color-mix(in srgb, Highlight 18%, Canvas);
+  --drop: color-mix(in srgb, Highlight 28%, Canvas);
+  --danger: #b42318;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  min-width: 280px;
+}
+
+button, select, input { font: inherit; }
+button { cursor: pointer; }
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 14px 14px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.app-header p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+main { padding: 10px; }
+
+.toolbar,
+.secondary-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  flex: 1 1 120px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.secondary-toolbar {
+  margin-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.secondary-toolbar select,
+.quiet {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 7px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.push-right { margin-left: auto; }
+
+.selection-hint,
+.status {
+  min-height: 20px;
+  padding: 7px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status[data-kind="error"] { color: var(--danger); }
+
+.root-drop-zone {
+  display: none;
+  margin: 8px 0 6px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 7px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+body.is-dragging .root-drop-zone {
+  display: block;
+}
+
+.root-drop-zone.drop-target,
+.tree-row.drop-target {
+  background: var(--drop);
+  outline: 1px solid Highlight;
+}
+
+.root-drop-zone.drop-invalid,
+.tree-row.drop-invalid {
+  outline: 1px solid var(--danger);
+  cursor: not-allowed;
+}
+
+.tree {
+  min-height: 90px;
+  margin-top: 6px;
+  user-select: none;
+}
+
+.tree-row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 31px;
+  border-radius: 7px;
+  padding-right: 3px;
+}
+
+.tree-row:hover { background: var(--hover); }
+.tree-row.selected { background: var(--selected); }
+
+body:not(.is-dragging) .tree-row .tree-label,
+body:not(.is-dragging) .tree-row .tree-spacer {
+  cursor: grab;
+}
+
+body.is-dragging,
+body.is-dragging .tree-row,
+body.is-dragging .tree-label,
+body.is-dragging .tree-spacer {
+  cursor: grabbing;
+}
+
+.tree-toggle,
+.tree-spacer {
+  width: 18px;
+  height: 28px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+}
+
+.tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 5px 4px;
+  cursor: default;
+}
+
+
+.tree-actions {
+  display: none;
+  gap: 2px;
+}
+
+.tree-row:hover .tree-actions,
+.tree-row.selected .tree-actions { display: flex; }
+
+.icon-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 5px;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 2px 5px;
+}
+
+.icon-button:hover {
+  background: var(--hover);
+  color: var(--fg);
+}
+
+.empty-state {
+  margin: 24px 8px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-state strong,
+.empty-state span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.keyboard-help {
+  margin: 16px 2px 4px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.drag-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  padding: 6px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 12px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+}

@@ -11,6 +11,10 @@
     };
   }
 
+  function nullableString(value) {
+    return typeof value === "string" && value ? value : null;
+  }
+
   function normalizeState(candidate) {
     if (!candidate || typeof candidate !== "object" || !Array.isArray(candidate.nodes)) {
       return emptyState();
@@ -19,23 +23,34 @@
     const nodes = candidate.nodes
       .filter((node) => node && typeof node === "object")
       .filter((node) => node.type === "folder" || node.type === "chat")
-      .map((node, index) => ({
-        id: typeof node.id === "string" && node.id ? node.id : crypto.randomUUID(),
-        type: node.type,
-        name: typeof node.name === "string" && node.name.trim() ? node.name.trim() : "Untitled",
-        parentId: typeof node.parentId === "string" ? node.parentId : null,
-        url: node.type === "chat" && typeof node.url === "string" ? node.url : null,
-        chatTitle: node.type === "chat" && typeof node.chatTitle === "string" ? node.chatTitle : null,
-        sortIndex: Number.isFinite(node.sortIndex) ? node.sortIndex : index,
-        createdAt: typeof node.createdAt === "string" ? node.createdAt : new Date().toISOString(),
-        updatedAt: typeof node.updatedAt === "string" ? node.updatedAt : new Date().toISOString()
-      }));
+      .map((node, index) => {
+        const normalized = {
+          id: typeof node.id === "string" && node.id ? node.id : crypto.randomUUID(),
+          type: node.type,
+          name: typeof node.name === "string" && node.name.trim() ? node.name.trim() : "Untitled",
+          parentId: typeof node.parentId === "string" ? node.parentId : null,
+          url: node.type === "chat" && typeof node.url === "string" ? node.url : null,
+          chatTitle: node.type === "chat" && typeof node.chatTitle === "string" ? node.chatTitle : null,
+          sortIndex: Number.isFinite(node.sortIndex) ? node.sortIndex : index,
+          createdAt: typeof node.createdAt === "string" ? node.createdAt : new Date().toISOString(),
+          updatedAt: typeof node.updatedAt === "string" ? node.updatedAt : new Date().toISOString()
+        };
+
+        if (node.type === "chat") {
+          normalized.branchParentConversationId = nullableString(node.branchParentConversationId);
+          normalized.branchRootConversationId = nullableString(node.branchRootConversationId);
+          normalized.branchSourceMessageId = nullableString(node.branchSourceMessageId);
+          normalized.branchDetectedAt = nullableString(node.branchDetectedAt);
+          normalized.branchDetectionSource = nullableString(node.branchDetectionSource);
+          normalized.branchAutoNamed = node.branchAutoNamed === true;
+        }
+
+        return normalized;
+      });
 
     const ids = new Set(nodes.map((node) => node.id));
     for (const node of nodes) {
-      if (node.parentId && !ids.has(node.parentId)) {
-        node.parentId = null;
-      }
+      if (node.parentId && !ids.has(node.parentId)) node.parentId = null;
     }
 
     return {
@@ -70,7 +85,8 @@
     return normalizeState(payload.state);
   }
 
-  window.ChatGPTExplorerStorage = {
+  globalThis.ChatGPTExplorerStorage = {
+    STORAGE_KEY,
     load,
     save,
     exportPayload,

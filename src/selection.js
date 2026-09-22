@@ -59,9 +59,7 @@
       if (additive) {
         if (this.selectedIds.has(id)) {
           this.selectedIds.delete(id);
-          if (this.anchorId === id) {
-            this.anchorId = this.selectedIds.values().next().value || null;
-          }
+          if (this.anchorId === id) this.anchorId = this.selectedIds.values().next().value || null;
         } else {
           this.selectedIds.add(id);
           this.anchorId = id;

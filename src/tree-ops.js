@@ -57,9 +57,7 @@
     if (newParentId) {
       for (const id of ids) {
         const node = nodeById(state, id);
-        if (node?.type === "folder" && descendantIds(state, id).has(newParentId)) {
-          return false;
-        }
+        if (node?.type === "folder" && descendantIds(state, id).has(newParentId)) return false;
       }
     }
 
@@ -78,15 +76,10 @@
 
   function moveNodes(state, orderedIds, newParentId, timestamp = new Date().toISOString()) {
     const ids = topLevelSelection(state, orderedIds);
-    if (!canMove(state, ids, newParentId)) {
-      return { movedIds: [], reason: "invalid-target" };
-    }
+    if (!canMove(state, ids, newParentId)) return { movedIds: [], reason: "invalid-target" };
 
     const oldParents = new Set();
-    for (const id of ids) {
-      const node = nodeById(state, id);
-      oldParents.add(node.parentId);
-    }
+    for (const id of ids) oldParents.add(nodeById(state, id).parentId);
 
     const existingTarget = state.nodes
       .filter((node) => node.parentId === newParentId && !ids.includes(node.id))
@@ -95,6 +88,7 @@
     let nextIndex = existingTarget.length
       ? Math.max(...existingTarget.map((node) => Number(node.sortIndex) || 0)) + 1
       : 0;
+
     for (const id of ids) {
       const node = nodeById(state, id);
       node.parentId = newParentId;
@@ -104,7 +98,6 @@
 
     for (const parentId of oldParents) normalizeParent(state, parentId);
     normalizeParent(state, newParentId);
-
     return { movedIds: ids, reason: null };
   }
 
@@ -121,13 +114,9 @@
     const { roots, all } = idsToDelete(state, selectedIds);
     if (!roots.length) return { rootIds: [], deletedIds: [] };
 
-    const oldParents = new Set(
-      roots.map((id) => nodeById(state, id)?.parentId ?? null)
-    );
-
+    const oldParents = new Set(roots.map((id) => nodeById(state, id)?.parentId ?? null));
     state.nodes = state.nodes.filter((node) => !all.has(node.id));
     for (const parentId of oldParents) normalizeParent(state, parentId);
-
     return { rootIds: roots, deletedIds: [...all] };
   }
 

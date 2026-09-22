@@ -33,9 +33,7 @@
 
       const ghost = document.createElement("div");
       ghost.className = "drag-ghost pointer-ghost";
-      ghost.textContent = this.draggedIds.length === 1
-        ? "Move 1 item"
-        : `Move ${this.draggedIds.length} items`;
+      ghost.textContent = this.draggedIds.length === 1 ? "Move 1 item" : `Move ${this.draggedIds.length} items`;
       document.body.appendChild(ghost);
       this.ghost = ghost;
       this.moveGhost(x, y);
@@ -61,9 +59,7 @@
     }
 
     clearTarget() {
-      if (this.activeTarget) {
-        this.activeTarget.classList.remove("drop-target", "drop-invalid");
-      }
+      if (this.activeTarget) this.activeTarget.classList.remove("drop-target", "drop-invalid");
       this.activeTarget = null;
       this.activeTargetId = undefined;
     }

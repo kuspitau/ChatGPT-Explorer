@@ -1,16 +1,25 @@
-ChatGPT Explorer baseline V0.2.2
+ChatGPT Explorer baseline V0.4.0
 
-Key change from V0.2.0:
-- reliable pointer-based drag & drop
-- drag starts from the whole row/label area
-- multi-selection drag preserved
-- storage schema remains version 1
+Key changes from V0.3.0:
+- folders now start collapsed and expanded-folder state is persisted
+- Collapse all / Expand all controls added
+- independent Track branches toggle added
+- branch genealogy stored independently from Explorer folder hierarchy
+- explicit Branch in new chat actions can be observed and linked to the created child conversation
+- best-effort historical branch recovery from visible Branched from parent links
+- Families view renders known conversation families as a separate tree
+- branch-related background writes are serialized with Quick Add writes
+- tree storage schema remains version 1 with optional additive metadata fields
 
 Validation performed before packaging:
 - manifest.json JSON parse: PASS
 - JavaScript syntax checks: PASS
-- core selection/tree/drag-threshold smoke tests: PASS
-- manifest/HTML local file references: PASS
+- core selection/tree/drag smoke tests: PASS
+- conversation title/URL utility tests: PASS
+- settings normalization + collapsed-default tests: PASS
+- branch relationship/tree utility tests: PASS
+- simulated background branch-flow test: PASS
+- manifest/HTML local references: PASS
 - ZIP integrity test: PASS
 
-Manual Edge side-panel smoke test still required.
+Manual Edge validation: PASS — V0.3.0 and V0.4.0 behavior accepted by the user on 2026-09-22.

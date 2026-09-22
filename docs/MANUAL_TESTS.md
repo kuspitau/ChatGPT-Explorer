@@ -1,64 +1,90 @@
-# Manual Edge test checklist — V0.2.0
+# Manual Edge test checklist — V0.4.0
 
-Use a disposable Explorer export/backup before destructive tests if the tree matters.
+**Release status:** V0.3.0 and V0.4.0 were manually accepted in Microsoft Edge on 2026-09-22. This file is intentionally kept as a reusable regression checklist for future changes; unchecked boxes are not pending release blockers.
+
+Export Explorer data before destructive tests if the current tree matters.
 
 ## Upgrade compatibility
 
-- [ ] Replace V0.1 files with V0.2 and reload the extension.
-- [ ] Existing folders and chats are still present.
+- [ ] Replace previous files with V0.4.0 and reload from `edge://extensions`.
+- [ ] Existing folders/chats remain present.
 - [ ] Existing chat links still open.
+- [ ] Existing custom Explorer names are unchanged.
+- [ ] Existing V0.3 Quick Add still works after permission is granted.
 
-## Selection
+## Folder expansion — V0.4
+
+- [ ] On first open after V0.4, folders whose expansion state was never saved are collapsed.
+- [ ] Expand one folder, close/reopen the side panel: it remains expanded.
+- [ ] Collapse it, close/reopen: it remains collapsed.
+- [ ] Create a new folder: it starts collapsed.
+- [ ] Click **Expand all**: all Explorer folders open.
+- [ ] Close/reopen the side panel: expanded state is preserved.
+- [ ] Click **Collapse all**: all Explorer folders close and stay closed after reopen.
+- [ ] Delete a folder that was expanded: no settings error occurs.
+
+## Selection and drag regression
 
 - [ ] Single click selects only one row.
-- [ ] Ctrl+click adds a second non-adjacent row.
-- [ ] Ctrl+click on an already selected row removes it.
-- [ ] Shift+click selects the visible range from the anchor.
-- [ ] Collapse a folder: hidden descendants are not included in a Shift range.
-- [ ] Switch to A→Z: Shift range follows the visible alphabetical order.
-- [ ] Escape clears the selection.
+- [ ] Ctrl+click adds/removes rows.
+- [ ] Shift+click selects visible range.
+- [ ] Escape clears selection.
+- [ ] Drag a chat into another folder.
+- [ ] Multi-select chats and drag together.
+- [ ] Drag to root.
+- [ ] Folder cycle moves are rejected.
+- [ ] Drag/drop is available in Explorer view and not in Families view.
 
-## Drag and drop
+## Existing operations regression
 
-- [ ] Drag one chat onto another folder: it moves there.
-- [ ] Ctrl-select several chats, drag one selected row onto another folder: all move together.
-- [ ] The drag ghost says `Move N items`.
-- [ ] Drag selected items onto `Move to root`: they become root items.
-- [ ] Drag a folder into another folder: it moves with its descendants.
-- [ ] Try to drag a folder onto itself: rejected.
-- [ ] Try to drag a folder into one of its descendants: rejected.
-- [ ] After a move, reload the side panel: the new location persists.
+- [ ] + Folder uses selected/anchor destination.
+- [ ] + Current chat uses selected/anchor destination.
+- [ ] Project-name prefix is removed for newly captured project conversations.
+- [ ] Same `/c/<id>` in project/plain URL form is detected as a duplicate.
+- [ ] Rename button and F2 work.
+- [ ] Export/Import round-trip works.
+- [ ] Manual/A→Z/Z→A render correctly.
 
-## Delete
+## Quick Add regression
 
-- [ ] Select several chats and press Delete: one confirmation appears and all selected chats are deleted.
-- [ ] Select a folder with descendants and another chat, press Delete: confirmation mentions nested items and removes the expected subtree.
-- [ ] Clicking × on an unselected row selects/deletes that row only.
+- [ ] Turn Quick Add on and accept optional ChatGPT host permission.
+- [ ] Normal-left-click a conversation link: it is added and navigation is prevented.
+- [ ] Modifier and middle clicks keep normal behavior.
+- [ ] Change Explorer destination and confirm later captures use it.
+- [ ] Turn Quick Add off and confirm normal navigation resumes.
 
-## Existing operations
+## Branch detection — explicit action
 
-- [ ] + Folder still uses the selected/anchor destination.
-- [ ] + Current chat still uses the selected/anchor destination.
-- [ ] Rename still works.
-- [ ] Export then Import round-trip still works.
-- [ ] Manual/A→Z/Z→A modes still render correctly.
+- [ ] Turn **Track branches** on and accept optional ChatGPT host permission (if not already granted).
+- [ ] Confirm Quick Add can remain off while branch tracking still works.
 
+- [ ] Ensure the parent conversation is open in ChatGPT.
+- [ ] Use a message menu and choose **Branch in new chat**.
+- [ ] If ChatGPT creates the branch in a new tab that already has its final `/c/<id>` URL at creation time, confirm the relationship is still captured.
+- [ ] Let ChatGPT create/open the child conversation normally.
+- [ ] Open Explorer and switch to **Families**.
+- [ ] Confirm the original conversation appears as a family root and the new conversation appears below it.
+- [ ] If the parent already belonged to an Explorer folder, confirm the newly auto-captured child initially appears in that same folder in Explorer view.
+- [ ] Branch the new child again: confirm a second generation appears correctly.
+- [ ] Confirm branch detection does not block ChatGPT's own branching action.
 
-## V0.2.1 pointer drag regression
+## Branch source-message metadata
 
-- [ ] Drag from the middle of a conversation name (not the bullet) starts a move.
-- [ ] Moving less than a few pixels still behaves as a normal click.
-- [ ] Drag a single chat onto another folder; it moves and persists after reload.
-- [ ] Ctrl-select several chats, then drag any selected chat by its name; the group moves together.
-- [ ] Drag an unselected chat while other items are selected; only the dragged chat moves.
-- [ ] Drag a folder into its own descendant; target is shown invalid and the move is rejected.
-- [ ] Drag any item to **Move to root**; it becomes a root item.
-- [ ] Double-click on a chat name still opens the chat when no drag occurs.
+- [ ] Branch from a message where ChatGPT exposes `data-message-id` in the rendered page.
+- [ ] Export Explorer JSON and check that `branchSourceMessageId` is populated for the child.
+- [ ] If ChatGPT does not expose that attribute, confirm the branch relation still works with a null source-message ID.
 
-## F2 rename
+## Historical branch marker discovery
 
-1. Select one conversation or folder.
-2. Press F2.
-3. Confirm that the rename prompt opens for the selected item.
-4. With multiple items selected, press F2 and confirm that only the active/anchor item is renamed.
-5. Confirm that Esc, Delete, Ctrl+click, Shift+click and drag/drop still behave normally.
+- [ ] Open a previously created branch that visibly exposes a clickable `Branched from` parent marker/link.
+- [ ] Wait a few seconds or interact once with the page.
+- [ ] Confirm Explorer records the parent/child relation in Families view.
+- [ ] Open a normal conversation with a similar title but no branch marker: confirm no family relation is invented.
+
+## Families view
+
+- [ ] Switch Explorer → Families and back; the selected view persists after reopening the side panel.
+- [ ] Standalone chats with no known branch relatives are omitted from Families view.
+- [ ] Double-click/open action on a family node opens the real chat.
+- [ ] Rename from Families view updates the Explorer display name only (real ChatGPT rename is not part of V0.4).
+- [ ] Delete from Families view removes the local Explorer node under the existing confirmation semantics.
